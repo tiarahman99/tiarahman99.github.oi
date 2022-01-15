@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Area Rawan Banjir Boalemo</title>
+    <link rel="stylesheet" href="library/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="library/leaflet/leaflet.js"></script>
+    <script src="library/leaflet-providers-master/leaflet-providers.js"></script>
+    <script src="library/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="map">
+        <script>
+            var map = L.map('map').setView([0.508334, 122.136268], 15);
+
+            var baseLayers = {
+                'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
+                'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery').addTo(map),
+                'OSM Default': L.tileLayer.provider('OpenStreetMap.DE'),
+                'OSM France': L.tileLayer.provider('OpenStreetMap.France')
+            };
+
+
+            /* Memanggil Layer Rawan Banjir */
+            var AreaRawanBanjir = L.geoJson(null, {
+                style: function(feature) {
+                    return {
+                        color: "black",
+                        fillColor: Kls_Rawan[feature.properties.Kls_Rawan],
+                        weight: 0.3,
+                        opacity: 0,
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function( feature, layer ){
+                    layer.bindPopup(
+                        "Klas Rawan Banjir : " + "<left>" + feature.properties.Kls_Rawan + "</left>" + "<br>" +
+                        "Luas :" + "<left>" + feature.properties.Shape_Area + "</left>" + " m2"
+                        )
+                }
+            });
+            $.getJSON("data/Kawasan_Banjir_Boalemo.json", function(data) {
+                AreaRawanBanjir.addData(data);
+            });
+
+			/* Merubah Tampilan Warna Berdasar Atribut Kls_Bnjr */
+			var Kls_Rawan = {
+				"Rendah":"#d3f0f2",
+				"Cukup Rendah":"#9bd1e8",
+				"Sedang":"#6c76cc",
+				"Tinggi":"#1326d1",
+				"Sangat Tinggi":"#0b0a5c"
+			};
+
+            var mapLayers = {
+                'Kawasan_Banjir_Boalemo': AreaRawanBanjir
+            };
+
+            L.control.layers(baseLayers, mapLayers).addTo(map);
+        </script>
+    </div>
+</body>
+
+</html>
